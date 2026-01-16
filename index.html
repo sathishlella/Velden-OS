@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Velden Enterprise OS</title>
+<style>
+  /* * VELDEN ENTERPRISE OS
+   * Design System: "Obsidian"
+   * Focus: Data Density, Clarity, Speed.
+   */
+
+  :root {
+    /* --- Typography --- */
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono-stack: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+    /* --- Palette: Obsidian Dark --- */
+    --bg-base: #09090b;
+    --bg-surface: #18181b;
+    --bg-surface-high: #27272a;
+    --bg-highlight: #3f3f46;
+    
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    
+    --text-main: #f4f4f5;
+    --text-muted: #a1a1aa;
+    --text-faint: #52525b;
+
+    /* --- Accents (Professional) --- */
+    --primary: #3b82f6; /* Enterprise Blue */
+    --primary-dim: rgba(59, 130, 246, 0.2);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #06b6d4;
+
+    /* --- Effects --- */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    --glass: rgba(24, 24, 27, 0.75);
+    --blur: blur(16px);
+    
+    /* --- Layout --- */
+    --taskbar-h: 48px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --z-desktop: 10;
+    --z-window: 100;
+    --z-dock: 1000;
+    --z-overlay: 2000;
+    --z-tooltip: 3000;
+  }
+
+  /* --- Resets --- */
+  * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background-color: var(--bg-base);
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 25%);
+    font-family: var(--font-stack);
+    color: var(--text-main);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    user-select: none; /* Desktop feel */
+  }
+
+  /* --- Typography Utilities --- */
+  .h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+  .h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  .h3 { font-size: 14px; font-weight: 600; margin: 0; }
+  .mono { font-family: var(--mono-stack); }
+  .muted { color: var(--text-muted); }
+  .faint { color: var(--text-faint); }
+  .tiny { font-size: 11px; }
+  .flex { display: flex; }
+  .col { flex-direction: column; }
+  .aic { align-items: center; }
+  .jcsb { justify-content: space-between; }
+  .gap-2 { gap: 8px; }
+  .gap-4 { gap: 16px; }
+  .p-2 { padding: 8px; }
+  .p-4 { padding: 16px; }
+  .grow { flex-grow: 1; }
+
+  /* --- Interactive Elements --- */
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: all 0.1s ease;
+  }
+  button:hover { background: var(--bg-highlight); border-color: var(--border-strong); }
+  button:active { transform: translateY(1px); }
+  button.primary { background: var(--primary); border-color: transparent; color: white; font-weight: 500; }
+  button.primary:hover { filter: brightness(1.1); }
+  button.icon-btn { padding: 6px; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; }
+
+  input, textarea, select {
+    background: var(--bg-base);
+    border: 1px solid var(--border-strong);
+    color: var(--text-main);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    width: 100%;
+  }
+  input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-dim); }
+
+  /* --- Desktop Environment --- */
+  #desktop {
+    position: absolute; inset: 0;
+    padding: 24px;
+    display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 16px;
+    z-index: var(--z-desktop);
+  }
+
+  .desktop-icon {
+    width: 80px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; text-align: center; padding: 8px; border-radius: var(--radius-md);
+    border: 1px solid transparent; transition: background 0.15s;
+  }
+  .desktop-icon:hover { background: rgba(255, 255, 255, 0.05); border-color: var(--border-subtle); }
+  .desktop-icon.selected { background: rgba(59, 130, 246, 0.2); border-color: var(--primary); }
+  .icon-box {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--bg-highlight), var(--bg-surface));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-md); border: 1px solid var(--border-subtle);
+    font-size: 20px; color: var(--text-muted);
+  }
+  .desktop-icon span { font-size: 12px; text-shadow: 0 1px 4px rgba(0,0,0,0.8); color: #fff; line-height: 1.3; }
+
+  /* --- Taskbar --- */
+  #taskbar {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    height: var(--taskbar-h);
+    background: var(--glass); backdrop-filter: var(--blur);
+    border: 1px solid var(--border-strong);
+    border-radius: 99px;
+    display: flex; align-items: center; padding: 0 8px; gap: 6px;
+    z-index: var(--z-dock);
+    box-shadow: var(--shadow-xl);
+  }
+  .dock-item {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .dock-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-4px) scale(1.1); color: var(--text-main); }
+  .dock-item.active::after {
+    content: ''; position: absolute; bottom: 2px; width: 4px; height: 4px;
+    background: var(--primary); border-radius: 50%;
+  }
+  
+  /* --- System Tray (Top Right) --- */
+  #tray {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; gap: 12px; align-items: center;
+    padding: 6px 12px; background: rgba(0,0,0,0.4); border-radius: 99px;
+    border: 1px solid var(--border-subtle);
+    font-size: 12px; font-weight: 500;
+    z-index: var(--z-dock);
+  }
+
+  /* --- Window Management --- */
+  .window {
+    position: absolute;
+    background: var(--bg-base);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 0.15s, transform 0.15s, width 0.1s, height 0.1s;
+    user-select: none;
+  }
+  .window.open { opacity: 1; transform: scale(1); }
+  .window.maximized {
+    top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important;
+    border-radius: 0; border: none;
+  }
+  .window.active { border-color: var(--border-strong); box-shadow: 0 0 0 1px rgba(255,255,255,0.05), var(--shadow-xl); }
+  
+  .titlebar {
+    height: 36px; background: var(--bg-surface);
+    display: flex; align-items: center; padding: 0 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 12px; font-weight: 500;
+    cursor: default; /* Logic handles drag cursor */
+    flex-shrink: 0;
+  }
+  .window-title { flex: 1; text-align: center; color: var(--text-muted); pointer-events: none; }
+  .window-controls { display: flex; gap: 8px; }
+  .win-btn {
+    width: 12px; height: 12px; border-radius: 50%; border: none; padding: 0;
+  }
+  .close-btn { background: #ef4444; } .min-btn { background: #f59e0b; } .max-btn { background: #10b981; }
+  .win-btn:hover { filter: brightness(0.8); }
+
+  .window-content { flex: 1; overflow: hidden; position: relative; background: var(--bg-base); display:flex; flex-direction:column; }
+  
+  /* Resize Handles */
+  .resize-handle { position: absolute; width: 6px; height: 6px; z-index: 2; }
+  .r-br { bottom: 0; right: 0; cursor: nwse-resize; }
+
+  /* --- App Specific Styles --- */
+  
+  /* Data Grid (Enterprise) */
+  .datagrid {
+    width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap;
+  }
+  .datagrid th {
+    text-align: left; padding: 10px 12px; color: var(--text-muted);
+    border-bottom: 1px solid var(--border-strong); font-weight: 500;
+    background: var(--bg-surface); position: sticky; top: 0;
+  }
+  .datagrid td {
+    padding: 10px 12px; border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-main);
+  }
+  .datagrid tr:hover td { background: var(--bg-surface); }
+  
+  /* Status Badges */
+  .badge {
+    display: inline-flex; align-items: center; padding: 2px 6px;
+    border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge.success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+  .badge.warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+  .badge.danger { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+  .badge.neutral { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
+
+  /* Start Menu */
+  #start-menu {
+    position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px);
+    width: 600px; height: 400px;
+    background: var(--glass); backdrop-filter: var(--blur);
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    display: grid; grid-template-columns: 200px 1fr;
+    opacity: 0; pointer-events: none; transition: all 0.2s;
+    z-index: var(--z-overlay);
+  }
+  #start-menu.open { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: all; }
+  .start-sidebar { background: rgba(0,0,0,0.2); padding: 16px; border-right: 1px solid var(--border-subtle); }
+  .start-grid { padding: 24px; display: grid; grid-template-columns: repeat(4, 1fr); align-content: start; gap: 16px; overflow-y: auto; }
+  .start-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.1s; }
+  .start-item:hover { background: rgba(255,255,255,0.05); }
+  .start-item span { font-size: 11px; color: var(--text-muted); text-align: center;}
+
+  /* Command Palette */
+  #cmd-palette {
+    position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 480px; background: var(--bg-surface); 
+    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl); z-index: var(--z-tooltip);
+    display: none; flex-direction: column; overflow: hidden;
+  }
+  #cmd-palette.open { display: flex; animation: fadein 0.1s; }
+  .cmd-input {
+    border: none; border-bottom: 1px solid var(--border-strong);
+    background: transparent; padding: 16px; font-size: 16px;
+    border-radius: 0;
+  }
+  .cmd-list { max-height: 300px; overflow-y: auto; }
+  .cmd-item {
+    padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; color: var(--text-muted);
+  }
+  .cmd-item:hover, .cmd-item.selected { background: var(--primary); color: white; }
+  .cmd-shortcut { font-size: 10px; opacity: 0.7; border: 1px solid currentColor; padding: 1px 4px; border-radius: 3px;}
+
+  /* Toast Notification */
+  #toast-container { position: absolute; top: 48px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: var(--z-tooltip); pointer-events: none; }
+  .toast {
+    background: var(--bg-surface); border: 1px solid var(--border-strong);
+    padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+    min-width: 250px; transform: translateX(20px); opacity: 0;
+    transition: all 0.3s; pointer-events: all;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast-icon { width: 24px; height: 24px; border-radius: 50%; background: var(--bg-highlight); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+  @keyframes fadein { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+  /* RCM Stats Cards */
+  .stat-card {
+    background: var(--bg-surface-high); border: 1px solid var(--border-strong);
+    padding: 16px; border-radius: var(--radius-md);
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 120px;
+  }
+  .stat-val { font-size: 24px; font-weight: 600; color: var(--text-main); }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+  /* --- Mobile Optimization --- */
+  @media (max-width: 768px) {
+    .window {
+      width: 100% !important;
+      height: calc(100% - var(--taskbar-h) - 16px) !important;
+      top: 0 !important;
+      left: 0 !important;
+      border-radius: 0 !important;
+      border: none;
+    }
+    .window.minimized {
+      transform: translateY(100%) scale(0.9);
+      opacity: 0;
+    }
+    .resize-handle { display: none; }
+    
+    #start-menu {
+      width: 95%;
+      height: 70%;
+      bottom: 60px;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+    .start-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-direction: row;
+      align-items: center;
+      padding: 12px;
+    }
+    .start-sidebar .col { 
+      flex-direction: row; 
+      align-items: center; 
+      gap: 12px; 
+    }
+    
+    #cmd-palette { width: 95%; top: 10%; }
+    
+    .desktop-icon { width: 72px; padding: 4px; }
+    
+    #taskbar {
+      bottom: 8px;
+      padding: 0 12px;
+      width: auto;
+      max-width: 95%;
+      overflow-x: auto;
+      justify-content: flex-start;
+    }
+    
+    .stat-card { min-width: 100%; }
+    .flex.gap-4 { flex-wrap: wrap; }
+    
+    #toast-container { right: 12px; left: 12px; width: auto; }
+    .toast { min-width: auto; width: 100%; }
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- Background Layer -->
+  <div id="desktop"></div>
+
+  <!-- System Tray -->
+  <div id="tray">
+    <span id="clock">12:00</span>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Command Palette -->
+  <div id="cmd-palette">
+    <input type="text" class="cmd-input" placeholder="Type a command..." id="cmd-input" autofocus>
+    <div class="cmd-list" id="cmd-list"></div>
+  </div>
+
+  <!-- Start Menu -->
+  <div id="start-menu">
+    <div class="start-sidebar flex col jcsb">
+      <div class="flex col gap-2">
+        <div class="h3 p-2">Velden<span style="color:var(--primary)">OS</span></div>
+        <button class="icon-btn" style="width:100%; justify-content:flex-start; gap:8px;" onclick="OS.boot()">
+           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"></path></svg> Restart
+        </button>
+      </div>
+      <div class="flex aic gap-2 p-2" style="background:var(--bg-base); border-radius:6px; border:1px solid var(--border-strong)">
+        <div style="width:24px; height:24px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:10px;">A</div>
+        <div class="col">
+          <span style="font-weight:600; font-size:11px;">Admin</span>
+          <span class="tiny muted">Enterprise</span>
+        </div>
+      </div>
+    </div>
+    <div class="start-grid" id="start-grid">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- Taskbar -->
+  <div id="taskbar">
+    <div class="dock-item" onclick="StartMenu.toggle()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+    </div>
+    <div style="width:1px; height:24px; background:var(--border-strong); margin:0 6px;"></div>
+    <!-- Dock Apps Injected Here -->
+    <div id="dock-apps" class="flex gap-2"></div>
+  </div>
+
+<script>
+/**
+ * Velden Enterprise OS Core
+ * Architecture: Monolithic Object-Oriented for Single File portability.
+ */
+
+// --- UTILS ---
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+const el = (tag, cls, html) => {
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html) e.innerHTML = html;
+  return e;
+};
+const uuid = () => Math.random().toString(36).substr(2, 9);
+const isMobile = () => window.innerWidth <= 768;
+
+// --- ICONS (SVG Strings) ---
+const Icons = {
+  claims: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+  dashboard: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+  files: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+  settings: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  terminal: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>'
+};
+
+// --- DATA MOCKS ---
+const ClaimsData = [
+  { id: 'CLM-001', patient: 'Doe, John', amount: 1250.00, payer: 'Aetna', status: 'denied', date: '2023-10-12' },
+  { id: 'CLM-002', patient: 'Smith, Jane', amount: 450.00, payer: 'BCBS', status: 'paid', date: '2023-10-14' },
+  { id: 'CLM-003', patient: 'Brown, Bob', amount: 3200.00, payer: 'Cigna', status: 'pending', date: '2023-10-15' },
+  { id: 'CLM-004', patient: 'Davis, Liz', amount: 150.00, payer: 'Medicare', status: 'denied', date: '2023-10-16' },
+  { id: 'CLM-005', patient: 'Wilson, Tom', amount: 890.00, payer: 'UHC', status: 'paid', date: '2023-10-16' },
+  { id: 'CLM-006', patient: 'Miller, Ann', amount: 2100.00, payer: 'Aetna', status: 'pending', date: '2023-10-17' },
+];
+
+// --- APP REGISTRY ---
+const Apps = {
+  dashboard: {
+    id: 'dashboard',
+    title: 'RCM Dashboard',
+    icon: Icons.dashboard,
+    color: '#3b82f6',
+    render: (win) => {
+      const total = ClaimsData.reduce((acc, c) => acc + c.amount, 0);
+      const denied = ClaimsData.filter(c => c.status === 'denied').length;
+      
+      return `
+        <div class="p-4 flex col gap-4" style="height:100%; overflow-y:auto">
+          <div class="flex gap-4">
+            <div class="stat-card grow">
+              <span class="stat-label">Total Volume</span>
+              <span class="stat-val">$${total.toLocaleString()}</span>
+            </div>
+            <div class="stat-card grow">
+              <span class="stat-label">Denial Rate</span>
+              <span class="stat-val" style="color:var(--danger)">${Math.round((denied/ClaimsData.length)*100)}%</span>
+            </div>
+            <div class="stat-card grow">
+              <span class="stat-label">Clean Claims</span>
+              <span class="stat-val" style="color:var(--success)">82%</span>
+            </div>
+          </div>
+          
+          <div class="stat-card grow">
+            <span class="stat-label" style="margin-bottom:8px">Revenue Trend (Q4)</span>
+            <div style="height:150px; display:flex; align-items:flex-end; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle)">
+              ${[40, 60, 45, 80, 55, 90, 70, 60, 85, 95, 60, 75].map(h => 
+                `<div style="flex:1; background:var(--primary); opacity:0.8; border-radius:4px 4px 0 0; height:${h}%"></div>`
+              ).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  },
+  claims: {
+    id: 'claims',
+    title: 'Claims Manager',
+    icon: Icons.claims,
+    color: '#10b981',
+    render: (win) => {
+      const rows = ClaimsData.map(c => {
+        let badge = 'neutral';
+        if(c.status === 'paid') badge = 'success';
+        if(c.status === 'denied') badge = 'danger';
+        if(c.status === 'pending') badge = 'warning';
+        
+        return `
+          <tr>
+            <td class="mono" style="font-size:11px">${c.id}</td>
+            <td>${c.patient}</td>
+            <td>${c.payer}</td>
+            <td>${c.date}</td>
+            <td class="mono">$${c.amount.toFixed(2)}</td>
+            <td><span class="badge ${badge}">${c.status}</span></td>
+            <td><button class="primary" style="padding:2px 8px; font-size:10px" onclick="OS.toast('Opening claim ${c.id}', 'info')">View</button></td>
+          </tr>
+        `;
+      }).join('');
+
+      return `
+        <div class="flex col" style="height:100%">
+          <div class="p-2 flex jcsb aic" style="border-bottom:1px solid var(--border-subtle)">
+            <div class="flex gap-2">
+              <button onclick="OS.toast('Filter applied', 'info')">Filter</button>
+              <button onclick="OS.toast('Exporting CSV...', 'success')">Export</button>
+            </div>
+            <input type="text" placeholder="Search claims..." style="width:200px">
+          </div>
+          <div style="overflow:auto; flex:1">
+            <table class="datagrid">
+              <thead>
+                <tr>
+                  <th>ID</th><th>Patient</th><th>Payer</th><th>DOS</th><th>Amount</th><th>Status</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+  },
+  files: {
+    id: 'files',
+    title: 'File Explorer',
+    icon: Icons.files,
+    color: '#f59e0b',
+    render: (win) => `
+      <div class="flex" style="height:100%">
+        <div class="col gap-2 p-2" style="width:150px; border-right:1px solid var(--border-subtle); background:var(--bg-surface)">
+          <button style="text-align:left; border:none; background:transparent" class="muted">Home</button>
+          <button style="text-align:left; border:none; background:var(--bg-highlight)">Documents</button>
+          <button style="text-align:left; border:none; background:transparent" class="muted">Downloads</button>
+          <button style="text-align:left; border:none; background:transparent" class="muted">Network</button>
+        </div>
+        <div class="p-4 grid gap-4" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); align-content:start;">
+          ${['Report_Q3.pdf', 'Budget.xlsx', 'Logo.png', 'Notes.txt', 'System.log'].map(f => `
+            <div class="flex col aic gap-2 p-2" style="cursor:pointer" onclick="OS.toast('Opening ${f}...', 'info')">
+              <div style="width:40px; height:40px; background:var(--bg-highlight); border-radius:4px; display:flex; align-items:center; justify-content:center; color:var(--text-muted)">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+              </div>
+              <span class="tiny muted" style="text-align:center">${f}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `
+  },
+  terminal: {
+    id: 'terminal',
+    title: 'Terminal',
+    icon: Icons.terminal,
+    color: '#52525b',
+    render: (win) => `
+      <div style="background:#000; color:#10b981; font-family:var(--mono-stack); padding:8px; height:100%; font-size:12px;" onclick="$('#term-input').focus()">
+        <div>Velden OS [Version 10.0.19045.2486]</div>
+        <div>(c) Velden Corp. All rights reserved.</div>
+        <br>
+        <div id="term-log">C:\\Users\\Admin> npm start server</div>
+        <div>> Server listening on port 8080...</div>
+        <div class="flex">
+          <span>C:\\Users\\Admin></span>
+          <input id="term-input" type="text" style="background:transparent; border:none; color:inherit; padding:0 0 0 8px; flex:1; font-family:inherit; outline:none;" autocomplete="off">
+        </div>
+      </div>
+    `
+  }
+};
+
+// --- WINDOW MANAGER ---
+const WM = {
+  windows: [],
+  zIndex: 100,
+  
+  open(appId) {
+    const app = Apps[appId];
+    // Check existing
+    const existing = this.windows.find(w => w.appId === appId);
+    if(existing) {
+      this.focus(existing.id);
+      return;
+    }
+
+    const id = uuid();
+    const win = {
+      id,
+      appId,
+      title: app.title,
+      isMaximized: false,
+      isMinimized: false,
+      el: null,
+      x: 50 + (this.windows.length * 30),
+      y: 50 + (this.windows.length * 30),
+      w: 800,
+      h: 500
+    };
+
+    // DOM Creation
+    const dom = el('div', 'window');
+    dom.id = id;
+    dom.style.left = win.x + 'px';
+    dom.style.top = win.y + 'px';
+    dom.style.width = win.w + 'px';
+    dom.style.height = win.h + 'px';
+    dom.innerHTML = `
+      <div class="titlebar">
+        <div class="window-controls">
+          <button class="win-btn close-btn" onclick="WM.close('${id}')"></button>
+          <button class="win-btn min-btn" onclick="WM.minimize('${id}')"></button>
+          <button class="win-btn max-btn" onclick="WM.maximize('${id}')"></button>
+        </div>
+        <div class="window-title">${app.title}</div>
+      </div>
+      <div class="window-content">${app.render(win)}</div>
+      <div class="resize-handle r-br"></div>
+    `;
+
+    // Events
+    dom.addEventListener('mousedown', () => this.focus(id));
+    
+    // Drag
+    const titlebar = dom.querySelector('.titlebar');
+    titlebar.addEventListener('mousedown', (e) => {
+      if(e.target.closest('button')) return;
+      if(win.isMaximized || isMobile()) return; // Disable drag on mobile/maximized
+      e.preventDefault();
+      const startX = e.clientX - win.x;
+      const startY = e.clientY - win.y;
+      
+      const onMove = (moveE) => {
+        win.x = moveE.clientX - startX;
+        win.y = moveE.clientY - startY;
+        dom.style.transform = `translate(${0}px, ${0}px)`; // Reset logic
+        dom.style.left = win.x + 'px';
+        dom.style.top = win.y + 'px';
+      };
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    // Resize (Simple BR handle)
+    const handle = dom.querySelector('.r-br');
+    handle.addEventListener('mousedown', (e) => {
+      if(isMobile()) return; // Disable resize on mobile
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startW = win.w;
+      const startH = win.h;
+      
+      const onMove = (moveE) => {
+        win.w = Math.max(300, startW + (moveE.clientX - startX));
+        win.h = Math.max(200, startH + (moveE.clientY - startY));
+        dom.style.width = win.w + 'px';
+        dom.style.height = win.h + 'px';
+      };
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    document.body.appendChild(dom);
+    win.el = dom;
+    this.windows.push(win);
+    
+    // Animate in
+    requestAnimationFrame(() => dom.classList.add('open'));
+    
+    this.focus(id);
+    this.renderDock();
+    StartMenu.close();
+    CmdPalette.close();
+  },
+
+  close(id) {
+    const win = this.windows.find(w => w.id === id);
+    if(!win) return;
+    win.el.classList.remove('open');
+    setTimeout(() => {
+      win.el.remove();
+      this.windows = this.windows.filter(w => w.id !== id);
+      this.renderDock();
+    }, 200);
+  },
+
+  focus(id) {
+    const win = this.windows.find(w => w.id === id);
+    if(!win) return;
+    this.zIndex++;
+    win.el.style.zIndex = this.zIndex;
+    this.windows.forEach(w => w.el.classList.remove('active'));
+    win.el.classList.add('active');
+    
+    // Bring out of minimize
+    if(win.isMinimized) {
+      win.isMinimized = false;
+      win.el.style.display = 'flex';
+      setTimeout(() => {
+        win.el.style.opacity = '1';
+        win.el.style.transform = win.isMaximized ? 'none' : 'scale(1)';
+        // Reset transform on mobile if maximized/full screen
+        if(isMobile()) win.el.style.transform = 'none';
+      }, 10);
+    }
+  },
+
+  minimize(id) {
+    const win = this.windows.find(w => w.id === id);
+    win.isMinimized = true;
+    win.el.style.opacity = '0';
+    win.el.style.transform = 'scale(0.8) translateY(200px)';
+    setTimeout(() => win.el.style.display = 'none', 200);
+  },
+
+  maximize(id) {
+    if(isMobile()) return; // Always full screen on mobile
+    const win = this.windows.find(w => w.id === id);
+    win.isMaximized = !win.isMaximized;
+    if(win.isMaximized) {
+      win.el.classList.add('maximized');
+    } else {
+      win.el.classList.remove('maximized');
+    }
+  },
+
+  renderDock() {
+    const dock = $('#dock-apps');
+    dock.innerHTML = '';
+    // Show open apps
+    this.windows.forEach(w => {
+      const app = Apps[w.appId];
+      const item = el('div', 'dock-item active');
+      item.innerHTML = app.icon;
+      item.onclick = () => {
+        if(w.el.classList.contains('active') && !w.isMinimized) {
+          this.minimize(w.id);
+        } else {
+          this.focus(w.id);
+        }
+      };
+      dock.appendChild(item);
+    });
+  }
+};
+
+// --- START MENU ---
+const StartMenu = {
+  el: $('#start-menu'),
+  isOpen: false,
+  toggle() {
+    this.isOpen = !this.isOpen;
+    if(this.isOpen) {
+      this.el.classList.add('open');
+      CmdPalette.close();
+    } else {
+      this.el.classList.remove('open');
+    }
+  },
+  close() {
+    this.isOpen = false;
+    this.el.classList.remove('open');
+  },
+  init() {
+    const grid = $('#start-grid');
+    Object.values(Apps).forEach(app => {
+      const item = el('div', 'start-item');
+      item.innerHTML = `
+        <div class="icon-box" style="color:${app.color}">${app.icon}</div>
+        <span>${app.title}</span>
+      `;
+      item.onclick = () => WM.open(app.id);
+      grid.appendChild(item);
+    });
+
+    // Add Desktop Icons too
+    const desktop = $('#desktop');
+    Object.values(Apps).forEach(app => {
+      const dItem = el('div', 'desktop-icon');
+      dItem.innerHTML = `<div class="icon-box" style="color:${app.color}">${app.icon}</div><span>${app.title}</span>`;
+      // Mobile friendly: single click triggers
+      dItem.onclick = () => WM.open(app.id);
+      desktop.appendChild(dItem);
+    });
+  }
+};
+
+// --- COMMAND PALETTE (Enterprise Feature) ---
+const CmdPalette = {
+  el: $('#cmd-palette'),
+  input: $('#cmd-input'),
+  list: $('#cmd-list'),
+  isOpen: false,
+
+  toggle() {
+    this.isOpen = !this.isOpen;
+    if(this.isOpen) {
+      this.el.classList.add('open');
+      this.input.value = '';
+      this.input.focus();
+      this.renderMatches('');
+      StartMenu.close();
+    } else {
+      this.el.classList.remove('open');
+    }
+  },
+  
+  close() {
+    this.isOpen = false;
+    this.el.classList.remove('open');
+  },
+
+  renderMatches(query) {
+    this.list.innerHTML = '';
+    const q = query.toLowerCase();
+    
+    const commands = [
+      ...Object.values(Apps).map(a => ({ label: `Open ${a.title}`, action: () => WM.open(a.id), key:'App' })),
+      { label: 'Reload System', action: () => location.reload(), key:'Sys' },
+      { label: 'Toggle Fullscreen', action: () => document.documentElement.requestFullscreen(), key:'View' },
+      { label: 'Clear Notifications', action: () => $('#toast-container').innerHTML='', key:'Sys' }
+    ];
+
+    const matches = commands.filter(c => c.label.toLowerCase().includes(q));
+    
+    matches.forEach((c, idx) => {
+      const div = el('div', 'cmd-item' + (idx===0?' selected':''));
+      div.innerHTML = `<span>${c.label}</span> <span class="cmd-shortcut">${c.key}</span>`;
+      div.onclick = () => { c.action(); this.close(); };
+      this.list.appendChild(div);
+    });
+  }
+};
+
+// --- SYSTEM ---
+const OS = {
+  init() {
+    // Clock
+    setInterval(() => {
+      const d = new Date();
+      $('#clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }, 1000);
+
+    StartMenu.init();
+    
+    // Global Keys
+    document.addEventListener('keydown', (e) => {
+      if(e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        CmdPalette.toggle();
+      }
+      if(e.key === 'Escape') {
+        StartMenu.close();
+        CmdPalette.close();
+      }
+    });
+    
+    // Command Palette Input
+    $('#cmd-input').addEventListener('input', (e) => CmdPalette.renderMatches(e.target.value));
+    $('#cmd-input').addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') {
+        const sel = $('.cmd-item.selected');
+        if(sel) sel.click();
+      }
+    });
+
+    // Close menus on click outside
+    document.addEventListener('mousedown', (e) => {
+      if(!e.target.closest('#start-menu') && !e.target.closest('.dock-item') && StartMenu.isOpen) StartMenu.close();
+      if(!e.target.closest('#cmd-palette') && CmdPalette.isOpen) CmdPalette.close();
+    });
+
+    // Boot Toast
+    setTimeout(() => this.toast('System Ready. Press Ctrl+K for commands.', 'info'), 500);
+  },
+
+  toast(msg, type='info') {
+    const t = el('div', 'toast');
+    let color = 'var(--text-main)';
+    let icon = 'i';
+    if(type==='success') { color='var(--success)'; icon='✓'; }
+    if(type==='info') { color='var(--primary)'; icon='i'; }
+    
+    t.innerHTML = `
+      <div class="toast-icon" style="color:${color}; border:1px solid ${color}">${icon}</div>
+      <span style="font-size:13px">${msg}</span>
+    `;
+    $('#toast-container').appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => {
+      t.classList.remove('show');
+      setTimeout(() => t.remove(), 300);
+    }, 3000);
+  },
+
+  boot() {
+    document.body.style.opacity = '0';
+    setTimeout(() => location.reload(), 500);
+  }
+};
+
+// Start
+OS.init();
+
+</script>
+</body>
+</html>
